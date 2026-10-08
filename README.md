@@ -10,6 +10,18 @@
 
 ---
 
+## 📱 在线体验与扫码访问
+
+- **在线访问链接**：[https://lumingya.github.io/seven-segment-display/](https://lumingya.github.io/seven-segment-display/)
+- **扫码直接体验**：
+
+<div align="center">
+  <img src="qrcode.png" width="220" alt="扫码访问在线段码屏" />
+  <p><em>手机微信 / 浏览器扫码即可打开交互式段码屏</em></p>
+</div>
+
+---
+
 ## ✨ 核心特性
 
 - 🎯 **单数位即时驱动**：输入框严格限定单数字（0-9），输入立即驱动段码映射，非法字符自动过滤与防御。
