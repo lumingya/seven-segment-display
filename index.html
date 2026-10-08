@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>段码屏模拟器 | 7-Segment Display</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📟</text></svg>">
+</head>
+<body data-theme="led-red">
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-badge">7-SEGMENT DISPLAY</div>
+      <h1>智能单数位段码屏</h1>
+      <p class="subtitle">输入 0-9 任意一位数，硬件级管脚映射实时点亮</p>
+    </header>
+
+    <main class="workbench">
+      <!-- 虚拟显示屏面板 -->
+      <section class="display-panel-card" aria-label="段码屏显示区">
+        <div class="panel-header">
+          <span class="panel-tag">HARDWARE SIMULATION</span>
+          <div class="theme-switcher">
+            <button type="button" class="theme-btn active" data-set-theme="led-red">经典红光</button>
+            <button type="button" class="theme-btn" data-set-theme="led-green">翠绿荧光</button>
+            <button type="button" class="theme-btn" data-set-theme="lcd">黑白液晶</button>
+          </div>
+        </div>
+
+        <div class="bezel">
+          <div class="screen-surface">
+            <!-- 几何矢量高拟真 7 段数码管 -->
+            <svg id="segmentDisplay" class="seven-segment-svg" viewBox="0 0 160 260" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <g class="segments-group" transform="skewX(-6) translate(12, 10)">
+                <!-- 段 a (顶部横段) -->
+                <polygon data-segment="a" class="segment segment-h" points="26,12  38,24 102,24 114,12 102,0  38,0" />
+                <!-- 段 b (右上竖段) -->
+                <polygon data-segment="b" class="segment segment-v" points="116,16 128,28 128,108 116,120 104,108 104,28" />
+                <!-- 段 c (右下竖段) -->
+                <polygon data-segment="c" class="segment segment-v" points="116,128 128,140 128,220 116,232 104,220 104,140" />
+                <!-- 段 d (底部横段) -->
+                <polygon data-segment="d" class="segment segment-h" points="26,236 38,248 102,248 114,236 102,224 38,224" />
+                <!-- 段 e (左下竖段) -->
+                <polygon data-segment="e" class="segment segment-v" points="24,128 36,140 36,220 24,232 12,220 12,140" />
+                <!-- 段 f (左上竖段) -->
+                <polygon data-segment="f" class="segment segment-v" points="24,16  36,28  36,108  24,120 12,108 12,28" />
+                <!-- 段 g (中间横段) -->
+                <polygon data-segment="g" class="segment segment-h" points="26,124 38,136 102,136 114,124 102,112 38,112" />
+                <!-- 小数点 dp -->
+                <circle data-segment="dp" class="segment segment-dp" cx="138" cy="236" r="8" />
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 实时管脚状态引脚条 -->
+        <div class="pin-status-bar" aria-label="管脚电平状态">
+          <div class="pin-indicator" data-pin="a"><span class="pin-label">a</span><span class="pin-led"></span></div>
+          <div class="pin-indicator" data-pin="b"><span class="pin-label">b</span><span class="pin-led"></span></div>
+          <div class="pin-indicator" data-pin="c"><span class="pin-label">c</span><span class="pin-led"></span></div>
+          <div class="pin-indicator" data-pin="d"><span class="pin-label">d</span><span class="pin-led"></span></div>
+          <div class="pin-indicator" data-pin="e"><span class="pin-label">e</span><span class="pin-led"></span></div>
+          <div class="pin-indicator" data-pin="f"><span class="pin-label">f</span><span class="pin-led"></span></div>
+          <div class="pin-indicator" data-pin="g"><span class="pin-label">g</span><span class="pin-led"></span></div>
+        </div>
+      </section>
+
+      <!-- 操作与输入控制台 -->
+      <section class="control-panel-card" aria-label="控制输入区">
+        <div class="input-section">
+          <label for="digitInput" class="input-title">输入单数位 (0-9)</label>
+          <div class="input-wrapper">
+            <input 
+              id="digitInput" 
+              type="text" 
+              maxlength="1" 
+              inputmode="numeric" 
+              placeholder="-" 
+              autocomplete="off" 
+              spellcheck="false"
+              autofocus
+            >
+            <button id="clearBtn" type="button" class="btn-clear" title="清除输入">清空</button>
+          </div>
+          <p class="input-tip">支持键盘按键 0-9 直通输入或点击下方按键</p>
+        </div>
+
+        <!-- 数字快捷键键盘 -->
+        <div class="keypad-grid" role="group" aria-label="数字键">
+          <button type="button" class="num-key" data-num="1">1</button>
+          <button type="button" class="num-key" data-num="2">2</button>
+          <button type="button" class="num-key" data-num="3">3</button>
+          <button type="button" class="num-key" data-num="4">4</button>
+          <button type="button" class="num-key" data-num="5">5</button>
+          <button type="button" class="num-key" data-num="6">6</button>
+          <button type="button" class="num-key" data-num="7">7</button>
+          <button type="button" class="num-key" data-num="8">8</button>
+          <button type="button" class="num-key" data-num="9">9</button>
+          <button type="button" class="num-key" data-num="0">0</button>
+        </div>
+
+        <!-- 硬件总线诊断信息 -->
+        <div class="telemetry-card">
+          <div class="telemetry-item">
+            <span class="tlm-label">当前字符</span>
+            <span id="tlmChar" class="tlm-val">-</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="tlm-label">HEX 编码</span>
+            <span id="tlmHex" class="tlm-val">0x00</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="tlm-label">点亮段数</span>
+            <span id="tlmCount" class="tlm-val">0 / 7</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>开源项目 · 纯原生 JavaScript 与 SVG 矢量拟真 · 专为教学与交互展示打造</p>
+    </footer>
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

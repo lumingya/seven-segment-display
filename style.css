@@ -1,0 +1,378 @@
+:root {
+  --bg-gradient: radial-gradient(circle at 50% 20%, #1e222b 0%, #0d0f14 100%);
+  --panel-bg: rgba(26, 30, 40, 0.85);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --text-main: #f0f3f8;
+  --text-muted: #8b949e;
+  --accent-color: #ff3344;
+
+  /* 数码管发光变量 (默认 LED 红色) */
+  --bezel-bg: #090a0d;
+  --bezel-border: #1f232d;
+  --screen-bg: #0d0607;
+  --seg-off: rgba(255, 30, 50, 0.06);
+  --seg-on: #ff2a3b;
+  --seg-glow: 0 0 16px rgba(255, 42, 59, 0.9), 0 0 32px rgba(255, 42, 59, 0.5);
+  --pin-led-on: #ff2a3b;
+}
+
+/* 翠绿荧光主题 */
+body[data-theme="led-green"] {
+  --screen-bg: #040d07;
+  --seg-off: rgba(40, 255, 110, 0.06);
+  --seg-on: #2bff6e;
+  --seg-glow: 0 0 16px rgba(43, 255, 110, 0.9), 0 0 32px rgba(43, 255, 110, 0.5);
+  --pin-led-on: #2bff6e;
+}
+
+/* 经典灰黑液晶 LCD 主题 */
+body[data-theme="lcd"] {
+  --screen-bg: #98a58a;
+  --bezel-bg: #22252a;
+  --seg-off: rgba(60, 68, 55, 0.07);
+  --seg-on: #1c221a;
+  --seg-glow: none;
+  --pin-led-on: #4a5c40;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.app-header {
+  text-align: center;
+}
+
+.header-badge {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: #ff5263;
+  background: rgba(255, 82, 99, 0.12);
+  border: 1px solid rgba(255, 82, 99, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.app-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.workbench {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+@media (max-width: 768px) {
+  .workbench {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 面板卡片容器 */
+.display-panel-card,
+.control-panel-card {
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: var(--panel-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.theme-switcher {
+  display: flex;
+  gap: 6px;
+}
+
+.theme-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+
+.theme-btn.active {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* 屏幕外框与高精矢量显示区 */
+.bezel {
+  background: var(--bezel-bg);
+  border: 3px solid var(--bezel-border);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.9), 0 4px 12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.screen-surface {
+  background: var(--screen-bg);
+  border-radius: 8px;
+  padding: 12px 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 网格纹理增加真实感 */
+.screen-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px);
+  background-size: 4px 4px;
+  pointer-events: none;
+}
+
+.seven-segment-svg {
+  width: 150px;
+  height: 240px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.segment {
+  fill: var(--seg-off);
+  transition: fill 0.08s ease, filter 0.08s ease;
+}
+
+.segment.active {
+  fill: var(--seg-on);
+  filter: url(#glow);
+}
+
+body[data-theme="lcd"] .segment.active {
+  filter: none;
+}
+
+/* 引脚电平状态指示器 */
+.pin-status-bar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.pin-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pin-label {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--text-muted);
+}
+
+.pin-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.1s ease, box-shadow 0.1s ease;
+}
+
+.pin-indicator.active .pin-led {
+  background: var(--pin-led-on);
+  box-shadow: 0 0 8px var(--pin-led-on);
+}
+
+/* 右侧控制面板 */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+#digitInput {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#digitInput:focus {
+  border-color: #ff4757;
+  box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.25);
+}
+
+.btn-clear {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear:hover {
+  background: rgba(255, 71, 87, 0.2);
+  border-color: rgba(255, 71, 87, 0.4);
+  color: #ff6b81;
+}
+
+.input-tip {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 键盘矩阵按键 */
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.num-key {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.num-key:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.num-key:active,
+.num-key.pressed {
+  background: rgba(255, 71, 87, 0.3);
+  border-color: #ff4757;
+  transform: translateY(1px);
+}
+
+/* 状态总线诊断条 */
+.telemetry-card {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.telemetry-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.tlm-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.tlm-val {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.app-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
