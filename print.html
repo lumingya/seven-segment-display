@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作业交付单 - 单数位段码屏设计</title>
+  <style>
+    /* 基础重置 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+      background-color: #f3f4f6;
+      color: #111827;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 15px;
+    }
+
+    /* 顶部非打印操作栏 */
+    .no-print-toolbar {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .btn-print {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 9px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-print:hover {
+      background: #1d4ed8;
+    }
+
+    /* A4 纸张页面模拟 */
+    .a4-sheet {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      padding: 22mm 20mm;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      border-radius: 4px;
+      position: relative;
+    }
+
+    /* 报告排版 */
+    .report-header {
+      border-bottom: 2px solid #111827;
+      padding-bottom: 14px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .report-title h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+    .report-title p {
+      font-size: 13px;
+      color: #4b5563;
+    }
+    .report-badge {
+      font-size: 12px;
+      font-weight: 600;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      padding: 4px 10px;
+      border-radius: 4px;
+      color: #374151;
+    }
+
+    .section {
+      margin-bottom: 22px;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2937;
+      border-left: 4px solid #2563eb;
+      padding-left: 10px;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    /* 信息表格 */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .info-table th, .info-table td {
+      border: 1px solid #e5e7eb;
+      padding: 10px 14px;
+      text-align: left;
+    }
+    .info-table th {
+      width: 25%;
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+    }
+    .info-table td {
+      color: #111827;
+      word-break: break-all;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    /* 提示词展示卡片 */
+    .prompt-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #0f172a;
+      font-weight: 500;
+    }
+
+    /* 二维码与链接区域 */
+    .qr-container {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 16px 20px;
+    }
+    .qr-img {
+      width: 130px;
+      height: 130px;
+      display: block;
+      border-radius: 4px;
+      border: 1px solid #e5e7eb;
+    }
+    .qr-desc {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .qr-desc h4 {
+      font-size: 14px;
+      color: #111827;
+      font-weight: 700;
+    }
+    .qr-desc p {
+      font-size: 12px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+    .url-tag {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-family: monospace;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      word-break: break-all;
+    }
+
+    /* 简要功能图例说明 */
+    .feature-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+      color: #4b5563;
+    }
+    .feature-item {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+    .feature-item strong {
+      color: #111827;
+    }
+
+    /* 页脚 */
+    .report-footer {
+      position: absolute;
+      bottom: 18mm;
+      left: 20mm;
+      right: 20mm;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    /* 打印专用样式 */
+    @media print {
+      body {
+        background: transparent;
+        padding: 0;
+      }
+      .no-print-toolbar {
+        display: none !important;
+      }
+      .a4-sheet {
+        width: 100%;
+        min-height: auto;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 18mm 16mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 浏览器顶部操作条（打印时自动隐藏） -->
+  <div class="no-print-toolbar">
+    <span style="font-size: 13px; color: #4b5563;">📄 提示：点击右侧按钮直接调起系统打印或导出为 PDF（页边距选“默认”即可）</span>
+    <button class="btn-print" onclick="window.print()">
+      🖨️ 立即打印 / 存为 PDF
+    </button>
+  </div>
+
+  <!-- A4 纸张主体 -->
+  <div class="a4-sheet">
+    <header class="report-header">
+      <div class="report-title">
+        <h1>课程设计 / 实验作业交付单</h1>
+        <p>题目：拟真单数位段码屏模拟器设计与实现</p>
+      </div>
+      <div class="report-badge">7-SEGMENT DISPLAY</div>
+    </header>
+
+    <!-- 一、作业基本信息 -->
+    <section class="section">
+      <h3 class="section-title">一、项目与仓库信息</h3>
+      <table class="info-table">
+        <tr>
+          <th>项目名称</th>
+          <td style="font-family: inherit;">拟真单数位段码屏模拟器 (7-Segment Display)</td>
+        </tr>
+        <tr>
+          <th>GitHub 仓库</th>
+          <td>https://github.com/lumingya/seven-segment-display</td>
+        </tr>
+        <tr>
+          <th>在线体验地址</th>
+          <td>https://lumingya.github.io/seven-segment-display/</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- 二、使用的提示词 -->
+    <section class="section">
+      <h3 class="section-title">二、使用的提示词 (Prompt)</h3>
+      <div class="prompt-box">
+        制作一个段码屏，实现输入一位数，就能在段码屏显示出来的功能，并提交到github上，然后告诉我仓库地址
+      </div>
+    </section>
+
+    <!-- 三、在线体验二维码 -->
+    <section class="section">
+      <h3 class="section-title">三、在线演示二维码</h3>
+      <div class="qr-container">
+        <img src="qrcode.png" alt="在线演示二维码" class="qr-img" />
+        <div class="qr-desc">
+          <h4>📱 手机扫码即开</h4>
+          <p>无需安装任何环境，使用手机微信、浏览器或系统相机扫描左侧二维码，即可直接在线打开交互式段码屏。</p>
+          <div>
+            <span class="url-tag">https://lumingya.github.io/seven-segment-display/</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 四、核心实现与功能说明 -->
+    <section class="section">
+      <h3 class="section-title">四、核心实现说明</h3>
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>📐 7 段管脚映射：</strong>严格实现 a, b, c, d, e, f, g 七个物理段的高/低电平映射与 HEX 遥测。
+        </div>
+        <div class="feature-item">
+          <strong>🛡️ 严格单数字防御：</strong>输入框限制单字符（0-9），非数字或多位数自动过滤。
+        </div>
+        <div class="feature-item">
+          <strong>💡 多质感拟真发光：</strong>支持经典红光 LED、翠绿荧光、黑白 LCD 三种硬件质感切换。
+        </div>
+        <div class="feature-item">
+          <strong>⌨️ 多维交互直通：</strong>支持物理键盘 0-9 键直通、屏幕软键盘点击及文本框输入联动。
+        </div>
+      </div>
+    </section>
+
+    <!-- 底部标识 -->
+    <footer class="report-footer">
+      <span>交付形式：代码仓库 + 自动化部署 + 提示词验证</span>
+      <span>状态：已通过自动化测试与 GitHub Pages 部署</span>
+    </footer>
+  </div>
+
+</body>
+</html>
