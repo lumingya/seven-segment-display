@@ -243,7 +243,12 @@
 
   <!-- 浏览器顶部操作条（打印时自动隐藏） -->
   <div class="no-print-toolbar">
-    <span style="font-size: 13px; color: #4b5563;">📄 提示：点击右侧按钮直接调起系统打印或导出为 PDF（页边距选“默认”即可）</span>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <span style="font-size: 13px; font-weight: 600; color: #1f2937;">✍️ 署名设置：</span>
+      <label style="font-size: 12px; color: #4b5563;">姓名: <input id="inputName" type="text" value="lumingya" style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; width: 110px; font-size: 12px;"></label>
+      <label style="font-size: 12px; color: #4b5563;">学号/班级: <input id="inputId" type="text" placeholder="选填，如 2024001" style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; width: 140px; font-size: 12px;"></label>
+      <label style="font-size: 12px; color: #4b5563;">日期: <input id="inputDate" type="text" value="2026-10-11" style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; width: 100px; font-size: 12px;"></label>
+    </div>
     <button class="btn-print" onclick="window.print()">
       🖨️ 立即打印 / 存为 PDF
     </button>
@@ -259,21 +264,29 @@
       <div class="report-badge">7-SEGMENT DISPLAY</div>
     </header>
 
-    <!-- 一、作业基本信息 -->
+    <!-- 署名与基本信息 -->
     <section class="section">
-      <h3 class="section-title">一、项目与仓库信息</h3>
+      <h3 class="section-title">一、项目与学生署名信息</h3>
       <table class="info-table">
         <tr>
+          <th>学生姓名 / 署名</th>
+          <td id="displayName" style="font-family: inherit; font-weight: 600;">lumingya</td>
+          <th style="width: 20%;">学号 / 班级</th>
+          <td id="displayId" style="font-family: inherit;">—</td>
+        </tr>
+        <tr>
+          <th>提交日期</th>
+          <td id="displayDate" style="font-family: inherit;">2026-10-11</td>
           <th>项目名称</th>
-          <td style="font-family: inherit;">拟真单数位段码屏模拟器 (7-Segment Display)</td>
+          <td style="font-family: inherit;">拟真单数位段码屏模拟器</td>
         </tr>
         <tr>
           <th>GitHub 仓库</th>
-          <td>https://github.com/lumingya/seven-segment-display</td>
+          <td colspan="3">https://github.com/lumingya/seven-segment-display</td>
         </tr>
         <tr>
           <th>在线体验地址</th>
-          <td>https://lumingya.github.io/seven-segment-display/</td>
+          <td colspan="3">https://lumingya.github.io/seven-segment-display/</td>
         </tr>
       </table>
     </section>
@@ -327,5 +340,23 @@
     </footer>
   </div>
 
+  <script>
+    const inputName = document.getElementById('inputName');
+    const inputId = document.getElementById('inputId');
+    const inputDate = document.getElementById('inputDate');
+    const displayName = document.getElementById('displayName');
+    const displayId = document.getElementById('displayId');
+    const displayDate = document.getElementById('displayDate');
+
+    inputName.addEventListener('input', () => {
+      displayName.textContent = inputName.value.trim() || '—';
+    });
+    inputId.addEventListener('input', () => {
+      displayId.textContent = inputId.value.trim() || '—';
+    });
+    inputDate.addEventListener('input', () => {
+      displayDate.textContent = inputDate.value.trim() || '—';
+    });
+  </script>
 </body>
 </html>
